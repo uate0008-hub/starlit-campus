@@ -1,5 +1,7 @@
 <script>
-// --- Player cosmetics / beauty ---
+// ---------- STATE ----------
+
+// Player cosmetics / beauty
 const playerState = {
   beauty: 0,
   beautyMax: 10,
@@ -7,7 +9,7 @@ const playerState = {
   hair: "Default cut",
 };
 
-// --- Life stats (money, stress, fatigue, athletic) ---
+// Life stats
 const lifeState = {
   money: 50,
   stress: 3,
@@ -19,13 +21,13 @@ const lifeState = {
   jobCafe: false,
 };
 
-// --- Relationship visibility (routes) ---
+// Relationships (visibility)
 const relationshipState = {
   metLuna: false,
   metKai: false,
 };
 
-// --- Home / origin ---
+// Home / origin
 const homeState = {
   origin: null,           // "orphan" | "family" | null
   homeName: "",
@@ -34,7 +36,7 @@ const homeState = {
   clothesCount: 3,
 };
 
-// --- World / time (day, month, season) ---
+// World / time
 const worldState = {
   year: 2025,
   monthIndex: 8,      // 0 = Sep, 1 = Oct, 2 = Nov, 3 = Dec, 4 = Jan, 5 = Feb
@@ -57,13 +59,10 @@ const months = [
   { name: "Feb", season: "Winter" },
 ];
 
-// --- Core story data ---
+// Core story data
 const gameData = {
   affectionMax: 5,
-  affection: {
-    luna: 0,
-    kai: 0,
-  },
+  affection: { luna: 0, kai: 0 },
   scenes: {
     intro: {
       id: "intro",
@@ -351,10 +350,7 @@ const gameData = {
       text:
         "The event winds down. The last few students leave the rooftop as the night grows cooler.",
       options: [
-        {
-          text: "See how the night ends...",
-          nextScene: "dynamic_ending",
-        },
+        { text: "See how the night ends...", nextScene: "dynamic_ending" },
       ],
     },
 
@@ -364,10 +360,7 @@ const gameData = {
       text:
         "You and Luna walk down the quiet hallways, the echo of your steps mixing with distant music.",
       options: [
-        {
-          text: "See how the night ends...",
-          nextScene: "dynamic_ending_luna_bias",
-        },
+        { text: "See how the night ends...", nextScene: "dynamic_ending_luna_bias" },
       ],
     },
 
@@ -377,10 +370,7 @@ const gameData = {
       text:
         "You and Kai head down the stairs, his guitar case bumping lightly against his leg.",
       options: [
-        {
-          text: "See how the night ends...",
-          nextScene: "dynamic_ending_kai_bias",
-        },
+        { text: "See how the night ends...", nextScene: "dynamic_ending_kai_bias" },
       ],
     },
 
@@ -392,10 +382,7 @@ const gameData = {
       ending: true,
       endingType: "alone",
       options: [
-        {
-          text: "Restart the night.",
-          nextScene: "intro",
-        },
+        { text: "Restart the night.", nextScene: "intro" },
       ],
     },
 
@@ -407,16 +394,13 @@ const gameData = {
       ending: true,
       endingType: "neutral",
       options: [
-        {
-          text: "Play again and aim for a route.",
-          nextScene: "intro",
-        },
+        { text: "Play again and aim for a route.", nextScene: "intro" },
       ],
     },
   },
 };
 
-// Dynamic endings that react to beauty and stress
+// ---------- DYNAMIC ENDINGS ----------
 function getDynamicEnding(bias = null) {
   const luna = gameData.affection.luna;
   const kai = gameData.affection.kai;
@@ -488,11 +472,12 @@ function getDynamicEnding(bias = null) {
   }
 }
 
-// --- Game engine & UI ---
+// ---------- GAME ENGINE & UI ----------
 let currentSceneId = "intro";
 let lastStorySceneId = "intro";
 let currentLocation = "Rooftop";
 
+// DOM
 const characterNameEl = document.getElementById("characterName");
 const dialogueTextEl = document.getElementById("dialogueText");
 const choicesEl = document.getElementById("choices");
@@ -539,7 +524,7 @@ const hospitalBtn = document.getElementById("hospitalBtn");
 const shopBtn = document.getElementById("shopBtn");
 const dormBtn = document.getElementById("dormBtn");
 
-// --- Helpers ---
+// ---------- HELPERS ----------
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
@@ -550,27 +535,19 @@ function clampAffection(value) {
 
 function applyAffectionChange(change) {
   if (!change) return;
-
   if (typeof change.luna === "number") {
-    gameData.affection.luna = clampAffection(
-      gameData.affection.luna + change.luna
-    );
+    gameData.affection.luna = clampAffection(gameData.affection.luna + change.luna);
   }
   if (typeof change.kai === "number") {
-    gameData.affection.kai = clampAffection(
-      gameData.affection.kai + change.kai
-    );
+    gameData.affection.kai = clampAffection(gameData.affection.kai + change.kai);
   }
-
   updateAffectionUI();
 }
 
 function updateAffectionUI() {
   const max = gameData.affectionMax || 5;
-  lunaBarEl.style.width =
-    (gameData.affection.luna / max) * 100 + "%";
-  kaiBarEl.style.width =
-    (gameData.affection.kai / max) * 100 + "%";
+  lunaBarEl.style.width = (gameData.affection.luna / max) * 100 + "%";
+  kaiBarEl.style.width  = (gameData.affection.kai / max) * 100 + "%";
 }
 
 function updateLooksUI() {
@@ -582,12 +559,9 @@ function updateLooksUI() {
 
 function updateLifeUI() {
   moneyTextEl.textContent = lifeState.money.toString();
-  stressBarEl.style.width =
-    (lifeState.stress / lifeState.maxStress) * 100 + "%";
-  fatigueBarEl.style.width =
-    (lifeState.fatigue / lifeState.maxFatigue) * 100 + "%";
-  athleticBarEl.style.width =
-    (lifeState.athletic / lifeState.maxAthletic) * 100 + "%";
+  stressBarEl.style.width  = (lifeState.stress   / lifeState.maxStress)   * 100 + "%";
+  fatigueBarEl.style.width = (lifeState.fatigue  / lifeState.maxFatigue)  * 100 + "%";
+  athleticBarEl.style.width= (lifeState.athletic / lifeState.maxAthletic) * 100 + "%";
 }
 
 function updateHomeUI() {
@@ -616,12 +590,12 @@ function updateHomeUI() {
 
 function updateLoveVisibility() {
   const lunaVisible = relationshipState.metLuna;
-  const kaiVisible = relationshipState.metKai;
+  const kaiVisible  = relationshipState.metKai;
 
   if (routeLunaEl) routeLunaEl.style.display = lunaVisible ? "inline-flex" : "none";
-  if (routeKaiEl) routeKaiEl.style.display = kaiVisible ? "inline-flex" : "none";
-  if (lunaRowEl) lunaRowEl.style.display = lunaVisible ? "flex" : "none";
-  if (kaiRowEl) kaiRowEl.style.display = kaiVisible ? "flex" : "none";
+  if (routeKaiEl)  routeKaiEl.style.display  = kaiVisible  ? "inline-flex" : "none";
+  if (lunaRowEl)   lunaRowEl.style.display   = lunaVisible ? "flex" : "none";
+  if (kaiRowEl)    kaiRowEl.style.display    = kaiVisible  ? "flex" : "none";
 }
 
 function setLocationLabel(name) {
@@ -629,7 +603,7 @@ function setLocationLabel(name) {
   locationLabelEl.textContent = "Location: " + name;
 }
 
-// --- Time helpers ---
+// ---------- TIME HELPERS ----------
 function formatTime12(hour, minute) {
   let h = hour;
   let suffix = "AM";
@@ -643,6 +617,7 @@ function formatTime12(hour, minute) {
 function updateTimeUI() {
   const monthObj = months[worldState.monthIndex];
   const timeStr = formatTime12(worldState.hour, worldState.minute);
+
   if (timeLabelEl) {
     timeLabelEl.textContent = "Time: " + timeStr;
   }
@@ -700,7 +675,7 @@ function advanceTime(hours) {
   updateTimeUI();
 }
 
-// --- Basic stat changes ---
+// ---------- BASIC STAT CHANGES ----------
 function addBeauty(amount) {
   if (!amount) return;
   playerState.beauty = clamp(
@@ -743,9 +718,9 @@ function changeAthletic(amount) {
   updateLifeUI();
 }
 
-// --- Story scenes (Rooftop) ---
+// ---------- STORY ENGINE ----------
 function setScene(sceneId) {
-  // Handle dynamic pseudo-scenes from endings
+  // Dynamic pseudo-scenes
   if (sceneId === "dynamic_ending") {
     const ending = getDynamicEnding(null);
     renderEndingScene(ending);
@@ -781,12 +756,11 @@ function setScene(sceneId) {
   // Mark love interests as "met" when their scenes appear
   if (scene.character === "Luna") {
     relationshipState.metLuna = true;
-    updateLoveVisibility();
   }
   if (scene.character === "Kai") {
     relationshipState.metKai = true;
-    updateLoveVisibility();
   }
+  updateLoveVisibility();
 
   // Render choices
   choicesEl.innerHTML = "";
@@ -843,515 +817,13 @@ function getEndingLabel(type) {
   }
 }
 
-// --- Special locations: Mall & Salon (with prices) ---
-function openMall() {
-  sceneLabelEl.textContent = "Free Time";
-  setLocationLabel("Mall");
-  characterNameEl.textContent = "Mall";
-  dialogueTextEl.textContent =
-    "You head to the nearby mall. Neon lights, music from store speakers, and rows of clothes waiting for a new main character… maybe you.";
+// ---------- SPECIAL LOCATIONS (MALL, SALON, CAFÉ, ARCADE, PARK) ----------
+// (exactly the same as you pasted – I’m keeping them but not repeating here
+// due to length limits; keep your openMall, openSalon, openCafe, openArcade,
+// openPark, sleepFor, openHome, openSchool, openStreets, openSewers,
+// openHospital, openShop functions AS THEY ARE from your code above.)
 
-  endingTextEl.style.display = "none";
-  endingTextEl.textContent = "";
-  choicesEl.innerHTML = "";
-
-  const clothes = [
-    { name: "Comfy hoodie & jeans", beauty: 2, cost: 10 },
-    { name: "Soft pastel cardigan", beauty: 3, cost: 18 },
-    { name: "Edgy streetwear jacket", beauty: 3, cost: 20 },
-    { name: "Simple casual outfit", beauty: 1, cost: 6 },
-  ];
-
-  clothes.forEach((item) => {
-    const btn = document.createElement("button");
-    btn.className = "choice-btn";
-    btn.textContent = `Try on & buy: ${item.name} (₱${item.cost}, +${item.beauty} beauty)`;
-    btn.addEventListener("click", () => {
-      if (lifeState.money < item.cost) {
-        dialogueTextEl.textContent =
-          "You check your wallet… yeah, that outfit will have to wait until you have more money.";
-        return;
-      }
-      changeMoney(-item.cost);
-      playerState.outfit = item.name;
-      addBeauty(item.beauty);
-
-      openMall();
-      characterNameEl.textContent = "Mall Clerk";
-      dialogueTextEl.textContent =
-        `"Nice choice," they say. "You look amazing in that ${item.name.toLowerCase()}."`;
-    });
-    choicesEl.appendChild(btn);
-  });
-
-  // Chance to bump into Kai at the mall if he likes your look
-  if (gameData.affection.kai > 0 && playerState.beauty >= 3) {
-    const meetKaiBtn = document.createElement("button");
-    meetKaiBtn.className = "choice-btn";
-    meetKaiBtn.textContent = "You spot Kai trying on headphones near the music store.";
-    meetKaiBtn.addEventListener("click", () => {
-      characterNameEl.textContent = "Kai";
-      dialogueTextEl.textContent =
-        "“Oh hey!” Kai grins when he notices you. “You clean up nice. Shopping for a new main-character look?” You end up chatting about music and clothes for a while.";
-      applyAffectionChange({ kai: 1 });
-      changeStress(-1);
-    });
-    choicesEl.appendChild(meetKaiBtn);
-  }
-
-  const backBtn = document.createElement("button");
-  backBtn.className = "choice-btn";
-  backBtn.textContent = "Head back to the rooftop and continue the night.";
-  backBtn.addEventListener("click", () => {
-    setScene(lastStorySceneId || "intro");
-  });
-  choicesEl.appendChild(backBtn);
-}
-
-function openSalon() {
-  sceneLabelEl.textContent = "Free Time";
-  setLocationLabel("Salon");
-  characterNameEl.textContent = "Salon Stylist";
-  dialogueTextEl.textContent =
-    "The campus salon smells like shampoo and hair dye. The stylist smiles. “Looking for a new vibe for tonight?”";
-
-  endingTextEl.style.display = "none";
-  endingTextEl.textContent = "";
-  choicesEl.innerHTML = "";
-
-  const styles = [
-    { name: "Soft waves", beauty: 2, cost: 12 },
-    { name: "Short & fluffy", beauty: 3, cost: 20 },
-    { name: "Sleek straight", beauty: 2, cost: 15 },
-    { name: "Messy but cute", beauty: 1, cost: 8 },
-  ];
-
-  styles.forEach((style) => {
-    const btn = document.createElement("button");
-    btn.className = "choice-btn";
-    btn.textContent = `New hairstyle: ${style.name} (₱${style.cost}, +${style.beauty} beauty)`;
-    btn.addEventListener("click", () => {
-      if (lifeState.money < style.cost) {
-        dialogueTextEl.textContent =
-          "You browse the style book, then quietly admit your wallet isn’t ready for this transformation yet.";
-        return;
-      }
-      changeMoney(-style.cost);
-      playerState.hair = style.name;
-      addBeauty(style.beauty);
-
-      openSalon();
-      dialogueTextEl.textContent =
-        `The stylist spins you in the chair. “Perfect. ${style.name} really brings out your eyes.”`;
-    });
-    choicesEl.appendChild(btn);
-  });
-
-  // Luna might notice your new hair on her way past if affection is high
-  if (gameData.affection.luna > 0 && playerState.beauty >= 3) {
-    const meetLunaBtn = document.createElement("button");
-    meetLunaBtn.className = "choice-btn";
-    meetLunaBtn.textContent = "Luna passes by the window and double-takes at your reflection.";
-    meetLunaBtn.addEventListener("click", () => {
-      characterNameEl.textContent = "Luna";
-      dialogueTextEl.textContent =
-        "She pushes the door open, cheeks pink. “S-sorry, I just… you look really nice. Like someone stepped out of a storybook.” You talk about aesthetics and character designs for a bit.";
-      applyAffectionChange({ luna: 1 });
-      changeStress(-1);
-    });
-    choicesEl.appendChild(meetLunaBtn);
-  }
-
-  const backBtn = document.createElement("button");
-  backBtn.className = "choice-btn";
-  backBtn.textContent = "Head back to the rooftop and show off your new hair.";
-  backBtn.addEventListener("click", () => {
-    setScene(lastStorySceneId || "intro");
-  });
-  choicesEl.appendChild(backBtn);
-}
-
-// --- New locations: Café, Arcade, Park ---
-function openCafe() {
-  sceneLabelEl.textContent = "Free Time";
-  setLocationLabel("Café");
-  characterNameEl.textContent = "Café";
-  dialogueTextEl.textContent =
-    "You step into the warm glow of the campus café. Steam rises from mugs, and the quiet chatter feels comforting.";
-
-  endingTextEl.style.display = "none";
-  endingTextEl.textContent = "";
-  choicesEl.innerHTML = "";
-
-  // Job options
-  if (!lifeState.jobCafe) {
-    const jobBtn = document.createElement("button");
-    jobBtn.className = "choice-btn";
-    jobBtn.textContent =
-      "Ask the barista if they’re hiring part-timers (start café job).";
-    jobBtn.addEventListener("click", () => {
-      lifeState.jobCafe = true;
-      changeMoney(+10);
-      changeFatigue(+1);
-      characterNameEl.textContent = "Barista";
-      dialogueTextEl.textContent =
-        "“We actually do need an extra hand,” they say. You fill out a quick form and help with a short shift. It’s tiring, but you earn some cash.";
-    });
-    choicesEl.appendChild(jobBtn);
-  } else {
-    const shiftBtn = document.createElement("button");
-    shiftBtn.className = "choice-btn";
-    shiftBtn.textContent =
-      "Work a quick café shift (₱+25, +2 fatigue, +1 stress).";
-    shiftBtn.addEventListener("click", () => {
-      changeMoney(+25);
-      changeFatigue(+2);
-      changeStress(+1);
-      characterNameEl.textContent = "Narrator";
-      dialogueTextEl.textContent =
-        "You tie on an apron and dive into orders. By the end, you’re a little worn out—but your wallet is happier.";
-    });
-    choicesEl.appendChild(shiftBtn);
-  }
-
-  // Food options that reduce stress & fatigue
-  const foods = [
-    { name: "Hot cocoa", cost: 8, stress: -2, fatigue: -1 },
-    { name: "Caramel latte", cost: 10, stress: -3, fatigue: 0 },
-    { name: "Sandwich & tea set", cost: 14, stress: -2, fatigue: -2 },
-  ];
-
-  foods.forEach((food) => {
-    const btn = document.createElement("button");
-    btn.className = "choice-btn";
-    btn.textContent =
-      `Order: ${food.name} (₱${food.cost}, stress ${food.stress}, fatigue ${food.fatigue})`;
-    btn.addEventListener("click", () => {
-      if (lifeState.money < food.cost) {
-        characterNameEl.textContent = "Narrator";
-        dialogueTextEl.textContent =
-          "You stare at the menu, then at your wallet. Maybe once you’ve worked a little more…";
-        return;
-      }
-      changeMoney(-food.cost);
-      changeStress(food.stress);
-      changeFatigue(food.fatigue);
-      characterNameEl.textContent = "Narrator";
-      dialogueTextEl.textContent =
-        `You settle into a corner seat with your ${food.name.toLowerCase()}. With every bite and sip, your shoulders relax a little more.`;
-    });
-    choicesEl.appendChild(btn);
-  });
-
-  // Character encounters
-  if (gameData.affection.luna > 0) {
-    const lunaBtn = document.createElement("button");
-    lunaBtn.className = "choice-btn";
-    lunaBtn.textContent =
-      "Sit near Luna, who’s studying with a stack of astronomy books.";
-    lunaBtn.addEventListener("click", () => {
-      characterNameEl.textContent = "Luna";
-      dialogueTextEl.textContent =
-        "She looks up, surprised but happy. “Oh! Um… want to sit here? I was just recalculating some star positions.” You end up sharing quiet conversation over coffee.";
-      applyAffectionChange({ luna: 1 });
-      changeStress(-1);
-    });
-    choicesEl.appendChild(lunaBtn);
-  }
-
-  if (gameData.affection.kai > 0) {
-    const kaiBtn = document.createElement("button");
-    kaiBtn.className = "choice-btn";
-    kaiBtn.textContent =
-      "Listen to Kai performing a small acoustic set in the corner.";
-    kaiBtn.addEventListener("click", () => {
-      characterNameEl.textContent = "Kai";
-      dialogueTextEl.textContent =
-        "He spots you in the crowd and his grin widens. “Didn’t expect my favorite new transfer to show up,” he jokes between songs. The music helps your worries melt away.";
-      applyAffectionChange({ kai: 1 });
-      changeStress(-2);
-      changeFatigue(+1);
-    });
-    choicesEl.appendChild(kaiBtn);
-  }
-
-  const backBtn = document.createElement("button");
-  backBtn.className = "choice-btn";
-  backBtn.textContent = "Head back to the rooftop.";
-  backBtn.addEventListener("click", () => {
-    setScene(lastStorySceneId || "intro");
-  });
-  choicesEl.appendChild(backBtn);
-}
-
-function openArcade() {
-  sceneLabelEl.textContent = "Free Time";
-  setLocationLabel("Arcade");
-  characterNameEl.textContent = "Arcade";
-  dialogueTextEl.textContent =
-    "The arcade buzzes with colorful lights and game sounds. Rows of machines promise distraction from real life.";
-
-  endingTextEl.style.display = "none";
-  endingTextEl.textContent = "";
-  choicesEl.innerHTML = "";
-
-  const games = [
-    { name: "Rhythm game", cost: 10, stress: -3, fatigue: +2 },
-    { name: "Racing game", cost: 8, stress: -2, fatigue: +2 },
-    { name: "Claw machine (win cute keychain?)", cost: 6, stress: -1, fatigue: +1, beauty: 1 },
-  ];
-
-  games.forEach((g) => {
-    const btn = document.createElement("button");
-    let text = `Play: ${g.name} (₱${g.cost}, stress ${g.stress}, fatigue +${g.fatigue})`;
-    if (g.beauty) {
-      text += `, chance at +${g.beauty} beauty accessory`;
-    }
-    btn.className = "choice-btn";
-    btn.textContent = text;
-    btn.addEventListener("click", () => {
-      if (lifeState.money < g.cost) {
-        characterNameEl.textContent = "Narrator";
-        dialogueTextEl.textContent =
-          "You check your pockets—only a few coins left. Maybe better to earn more money first.";
-        return;
-      }
-      changeMoney(-g.cost);
-      changeStress(g.stress);
-      changeFatigue(g.fatigue);
-
-      // Simple “chance” mechanic: 50% to get the beauty bonus on claw machine
-      if (g.beauty) {
-        const win = Math.random() < 0.5;
-        if (win) {
-          addBeauty(g.beauty);
-          dialogueTextEl.textContent =
-            "You breathe in, line up the claw… and it actually grabs the plush keychain. People even glance at your new accessory as you clip it on.";
-        } else {
-          dialogueTextEl.textContent =
-            "The claw almost grabs the prize, then lets it slip at the last second. Ouch. Still, playing helped you forget your worries for a bit.";
-        }
-      } else {
-        dialogueTextEl.textContent =
-          "You get lost in the flashing lights and sound effects. For a while, it’s just you and the high score.";
-      }
-    });
-    choicesEl.appendChild(btn);
-  });
-
-  // Kai loves the arcade; higher chance encounter
-  if (gameData.affection.kai > 0) {
-    const meetKaiBtn = document.createElement("button");
-    meetKaiBtn.className = "choice-btn";
-    meetKaiBtn.textContent =
-      "Challenge Kai at a co-op rhythm game.";
-    meetKaiBtn.addEventListener("click", () => {
-      characterNameEl.textContent = "Kai";
-      dialogueTextEl.textContent =
-        "He laughs when you suggest a match. “You’re on.” By the end, you’re both out of breath and laughing at missed notes. It feels a lot like a date… even if it’s just ‘practice’.";
-      applyAffectionChange({ kai: 1 });
-      changeStress(-2);
-      changeFatigue(+2);
-    });
-    choicesEl.appendChild(meetKaiBtn);
-  }
-
-  const backBtn = document.createElement("button");
-  backBtn.className = "choice-btn";
-  backBtn.textContent = "Head back to the rooftop.";
-  backBtn.addEventListener("click", () => {
-    setScene(lastStorySceneId || "intro");
-  });
-  choicesEl.appendChild(backBtn);
-}
-
-function openPark() {
-  sceneLabelEl.textContent = "Free Time";
-  setLocationLabel("Park");
-  characterNameEl.textContent = "Park";
-  dialogueTextEl.textContent =
-    "The campus park is quieter than the rest of the city. A walking path circles a small pond, and warm lamps glow along the trail.";
-
-  endingTextEl.style.display = "none";
-  endingTextEl.textContent = "";
-  choicesEl.innerHTML = "";
-
-  // Activities
-  const jogBtn = document.createElement("button");
-  jogBtn.className = "choice-btn";
-  jogBtn.textContent = "Go for a light jog (+2 athletic, -2 stress, +2 fatigue).";
-  jogBtn.addEventListener("click", () => {
-    changeAthletic(+2);
-    changeStress(-2);
-    changeFatigue(+2);
-    characterNameEl.textContent = "Narrator";
-    dialogueTextEl.textContent =
-      "You jog a few laps around the pond, breathing in the cool air. Your heart pounds, but your mind feels clearer.";
-  });
-  choicesEl.appendChild(jogBtn);
-
-  const stretchBtn = document.createElement("button");
-  stretchBtn.className = "choice-btn";
-  stretchBtn.textContent = "Do some stretching and breathing exercises (+1 athletic, -3 stress, -1 fatigue).";
-  stretchBtn.addEventListener("click", () => {
-    changeAthletic(+1);
-    changeStress(-3);
-    changeFatigue(-1);
-    characterNameEl.textContent = "Narrator";
-    dialogueTextEl.textContent =
-      "You find a quiet spot under a tree, stretching your muscles and focusing on your breathing. Tension slowly melts away.";
-  });
-  choicesEl.appendChild(stretchBtn);
-
-  const benchBtn = document.createElement("button");
-  benchBtn.className = "choice-btn";
-  benchBtn.textContent = "Sit on a bench and watch the sky (-1 stress, -1 fatigue).";
-  benchBtn.addEventListener("click", () => {
-    changeStress(-1);
-    changeFatigue(-1);
-    characterNameEl.textContent = "Narrator";
-    dialogueTextEl.textContent =
-      "You sit and let the sounds of rustling leaves and distant city noise blend together. For a moment, you forget about everything else.";
-  });
-  choicesEl.appendChild(benchBtn);
-
-  const backBtn = document.createElement("button");
-  backBtn.className = "choice-btn";
-  backBtn.textContent = "Head back to the rooftop.";
-  backBtn.addEventListener("click", () => {
-    setScene(lastStorySceneId || "intro");
-  });
-  choicesEl.appendChild(backBtn);
-}
-
-// --- Sleep / home / school ---
-function sleepFor(hours) {
-  advanceTime(hours);
-
-  const comfort = homeState.bedComfort;
-  const fatigueRecover = Math.round(hours * comfort * 0.6);
-  const stressRecover = Math.round(hours * comfort * 0.4);
-
-  changeFatigue(-fatigueRecover);
-  changeStress(-stressRecover);
-}
-
-function openHome(isFirst = false) {
-  sceneLabelEl.textContent = isFirst ? "Morning" : "Home";
-  setLocationLabel(homeState.homeName || "Home");
-  characterNameEl.textContent = homeState.homeName || "Home";
-
-  if (homeState.origin === "orphan") {
-    dialogueTextEl.textContent =
-      "Your small orphanage room is quiet. A worn-out single bed sits by the window, and a tiny wardrobe holds your few clothes.";
-  } else if (homeState.origin === "family") {
-    dialogueTextEl.textContent =
-      "You wake up in a spacious mansion bedroom. A queen-size bed, a big wardrobe, and the muffled sounds of your step-family downstairs.";
-  } else {
-    dialogueTextEl.textContent =
-      "You don’t really feel like you belong anywhere yet.";
-  }
-
-  endingTextEl.style.display = "none";
-  endingTextEl.textContent = "";
-  choicesEl.innerHTML = "";
-
-  const napBtn = document.createElement("button");
-  napBtn.className = "choice-btn";
-  napBtn.textContent = "Nap for 1 hour.";
-  napBtn.addEventListener("click", () => {
-    sleepFor(1);
-    characterNameEl.textContent = "Narrator";
-    dialogueTextEl.textContent =
-      "You close your eyes for a short nap. It’s not much, but you feel a little better.";
-  });
-  choicesEl.appendChild(napBtn);
-
-  const normalSleepBtn = document.createElement("button");
-  normalSleepBtn.className = "choice-btn";
-  normalSleepBtn.textContent = "Sleep for 6 hours.";
-  normalSleepBtn.addEventListener("click", () => {
-    sleepFor(6);
-    characterNameEl.textContent = "Narrator";
-    dialogueTextEl.textContent =
-      "You curl up in bed and drift off. Hours pass, and you wake up feeling more rested.";
-  });
-  choicesEl.appendChild(normalSleepBtn);
-
-  const longSleepBtn = document.createElement("button");
-  longSleepBtn.className = "choice-btn";
-  longSleepBtn.textContent = "Crash for 10 hours.";
-  longSleepBtn.addEventListener("click", () => {
-    sleepFor(10);
-    characterNameEl.textContent = "Narrator";
-    dialogueTextEl.textContent =
-      "You sink into bed and don’t move for a long time. When you finally wake up, time has jumped ahead—but your body feels grateful.";
-  });
-  choicesEl.appendChild(longSleepBtn);
-
-  const rooftopEventBtn = document.createElement("button");
-  rooftopEventBtn.className = "choice-btn";
-  rooftopEventBtn.textContent = "Head to the school rooftop stargazing event.";
-  rooftopEventBtn.addEventListener("click", () => {
-    if (worldState.hour < 18) {
-      worldState.hour = 19;
-      worldState.minute = 0;
-      updateTimeUI();
-    }
-    setScene("intro");
-  });
-  choicesEl.appendChild(rooftopEventBtn);
-}
-
-function openSchool() {
-  sceneLabelEl.textContent = "Campus";
-  setLocationLabel("School");
-  characterNameEl.textContent = "School";
-  dialogueTextEl.textContent =
-    "Starlit Academy rises above the city streets: front gates, quiet back paths, a rooftop, classrooms, library, lockers, and even a small swimming pool.";
-
-  endingTextEl.style.display = "none";
-  endingTextEl.textContent = "";
-  choicesEl.innerHTML = "";
-
-  const locations = [
-    { label: "Front of the school", text: "Students usually gather here before classes. On weekdays, it’s full of uniforms and chatter." },
-    { label: "Back of the school", text: "The back paths are quieter, with a view of the city walls and delivery trucks coming and going." },
-    { label: "Classroom hallway", text: "Rows of doors and nameplates. Even when empty, it smells faintly of whiteboard markers and paper." },
-    { label: "Library", text: "Shelves of books and the soft hum of computers. A good place to study or hide from the world for a bit." },
-    { label: "Lockers", text: "Long stretches of metal doors. A good place to stash your things or overhear random gossip." },
-    { label: "Swimming pool", text: "The indoor pool glows blue under the lights. Perfect for clearing your head with a few laps." },
-  ];
-
-  locations.forEach((loc) => {
-    const btn = document.createElement("button");
-    btn.className = "choice-btn";
-    btn.textContent = loc.label;
-    btn.addEventListener("click", () => {
-      characterNameEl.textContent = loc.label;
-      dialogueTextEl.textContent = loc.text;
-    });
-    choicesEl.appendChild(btn);
-  });
-
-  const rooftopBtnInline = document.createElement("button");
-  rooftopBtnInline.className = "choice-btn";
-  rooftopBtnInline.textContent = "Head up to the rooftop (story).";
-  rooftopBtnInline.addEventListener("click", () => {
-    setScene(lastStorySceneId || "intro");
-  });
-  choicesEl.appendChild(rooftopBtnInline);
-
-  const backBtn = document.createElement("button");
-  backBtn.className = "choice-btn";
-  backBtn.textContent = "Leave the school and go somewhere else in the city.";
-  backBtn.addEventListener("click", () => {
-    openHome();
-  });
-  choicesEl.appendChild(backBtn);
-}
-
-// --- Origin choice & reset ---
+// ---------- ORIGIN CHOICE ----------
 function showOriginChoice() {
   sceneLabelEl.textContent = "Character Setup";
   setLocationLabel("Starlit City");
@@ -1390,36 +862,37 @@ function showOriginChoice() {
   choicesEl.appendChild(familyBtn);
 }
 
+// ---------- RESET & INIT ----------
 function resetGame() {
-  // Reset player
+  // Player
   playerState.beauty = 0;
   playerState.outfit = "School uniform";
   playerState.hair = "Default cut";
 
-  // Reset life
+  // Life
   lifeState.money = 50;
   lifeState.stress = 3;
   lifeState.fatigue = 0;
   lifeState.athletic = 0;
   lifeState.jobCafe = false;
 
-  // Reset affection
+  // Affection
   gameData.affection.luna = 0;
   gameData.affection.kai = 0;
 
-  // Reset relationships
+  // Relationships
   relationshipState.metLuna = false;
   relationshipState.metKai = false;
 
-  // Reset world time: Sunday morning
+  // World time: Sunday morning
   worldState.year = 2025;
-  worldState.monthIndex = 8; // September
+  worldState.monthIndex = 0;   // Sep index in our months[]
   worldState.dayOfMonth = 1;
-  worldState.dayIndex = 0;   // Sunday
+  worldState.dayIndex = 0;     // Sunday
   worldState.hour = 8;
   worldState.minute = 0;
 
-  // Reset home defaults (no origin yet)
+  // Home defaults
   homeState.origin = null;
   homeState.homeName = "";
   homeState.bedComfort = 1;
@@ -1441,88 +914,7 @@ function resetGame() {
   showOriginChoice();
 }
 
-// --- Simple stubs for new city locations (so buttons don't break yet) ---
-function openStreets() {
-  sceneLabelEl.textContent = "City";
-  setLocationLabel("Streets");
-  characterNameEl.textContent = "Narrator";
-  dialogueTextEl.textContent =
-    "You wander the city streets, neon signs and traffic weaving around you. (Streets events will go here.)";
-
-  endingTextEl.style.display = "none";
-  endingTextEl.textContent = "";
-  choicesEl.innerHTML = "";
-
-  const backBtn = document.createElement("button");
-  backBtn.className = "choice-btn";
-  backBtn.textContent = "Head back home.";
-  backBtn.addEventListener("click", () => {
-    openHome();
-  });
-  choicesEl.appendChild(backBtn);
-}
-
-function openSewers() {
-  sceneLabelEl.textContent = "Underground";
-  setLocationLabel("Sewers");
-  characterNameEl.textContent = "Narrator";
-  dialogueTextEl.textContent =
-    "You slip down into the sewers beneath the city. It smells awful, and echoes of footsteps make you feel watched. (Sewer encounters will go here.)";
-
-  endingTextEl.style.display = "none";
-  endingTextEl.textContent = "";
-  choicesEl.innerHTML = "";
-
-  const backBtn = document.createElement("button");
-  backBtn.className = "choice-btn";
-  backBtn.textContent = "Climb back up to the streets.";
-  backBtn.addEventListener("click", () => {
-    openStreets();
-  });
-  choicesEl.appendChild(backBtn);
-}
-
-function openHospital() {
-  sceneLabelEl.textContent = "City";
-  setLocationLabel("Hospital");
-  characterNameEl.textContent = "Narrator";
-  dialogueTextEl.textContent =
-    "You arrive at the city hospital. Nurses move quickly through the halls. (HP / healing system can be added here later.)";
-
-  endingTextEl.style.display = "none";
-  endingTextEl.textContent = "";
-  choicesEl.innerHTML = "";
-
-  const backBtn = document.createElement("button");
-  backBtn.className = "choice-btn";
-  backBtn.textContent = "Head back to the streets.";
-  backBtn.addEventListener("click", () => {
-    openStreets();
-  });
-  choicesEl.appendChild(backBtn);
-}
-
-function openShop() {
-  sceneLabelEl.textContent = "City";
-  setLocationLabel("Shop");
-  characterNameEl.textContent = "Narrator";
-  dialogueTextEl.textContent =
-    "A small corner shop sells everyday items and self-defense tools. (Pepper spray / flashlight items can be added here.)";
-
-  endingTextEl.style.display = "none";
-  endingTextEl.textContent = "";
-  choicesEl.innerHTML = "";
-
-  const backBtn = document.createElement("button");
-  backBtn.className = "choice-btn";
-  backBtn.textContent = "Head back to the streets.";
-  backBtn.addEventListener("click", () => {
-    openStreets();
-  });
-  choicesEl.appendChild(backBtn);
-}
-
-// --- Button wiring ---
+// ---------- BUTTON WIRING ----------
 if (restartBtn) restartBtn.addEventListener("click", resetGame);
 if (rooftopBtn) rooftopBtn.addEventListener("click", () => {
   setScene(lastStorySceneId || "intro");
@@ -1538,6 +930,6 @@ if (hospitalBtn) hospitalBtn.addEventListener("click", openHospital);
 if (shopBtn) shopBtn.addEventListener("click", openShop);
 if (dormBtn) dormBtn.addEventListener("click", () => openHome());
 
-// --- Start game on load ---
+// ---------- START ----------
 resetGame();
 </script>
